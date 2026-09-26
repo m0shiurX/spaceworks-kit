@@ -19,5 +19,6 @@ test('every site names the spaceworks organization as publisher by default', fun
         '@id' => 'https://spaceworks.dev/#organization',
         'name' => 'Spaceworks',
         'url' => 'https://spaceworks.dev',
+        'logo' => 'https://spaceworks.dev/logo.png',
     ]);
 });
