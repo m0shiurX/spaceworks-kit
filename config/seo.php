@@ -90,6 +90,10 @@ return [
     | each site's brand. It is defined once, here, so all sites describe the
     | same node; sites should not override it.
     |
+    | "address", "telephone", "email" and "contact_point" are optional; a null
+    | value (or an address with no parts) is left out of the node. Opening
+    | hours belong on a LocalBusiness, not here.
+    |
     */
 
     'organization' => [
@@ -98,6 +102,22 @@ return [
         'url' => env('SEO_ORGANIZATION_URL', 'https://spaceworks.dev'),
         'logo' => env('SEO_ORGANIZATION_LOGO'),
         'same_as' => [],
+        'address' => [
+            'street' => 'Uposhohor R/A',
+            'locality' => 'Bogura',
+            'region' => null,
+            'postal_code' => '5800',
+            'country' => 'BD',
+        ],
+        'telephone' => '+8801625292000',
+        'email' => null,
+        'contact_point' => [
+            'contact_type' => 'customer support',
+            'telephone' => '+8801625292000',
+            'email' => null,
+            'area_served' => 'BD',
+            'available_language' => ['Bengali', 'English'],
+        ],
     ],
 
     /*

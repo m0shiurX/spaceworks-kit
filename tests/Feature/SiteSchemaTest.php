@@ -72,6 +72,100 @@ test('the organization and brand omit an empty logo and profile list', function 
     expect($organization['brand'])->not->toHaveKeys(['logo', 'sameAs']);
 });
 
+test('the organization carries its address, telephone, email and contact point when configured', function () {
+    config([
+        'seo.organization.address' => [
+            'street' => 'Uposhohor R/A',
+            'locality' => 'Bogura',
+            'region' => null,
+            'postal_code' => '5800',
+            'country' => 'BD',
+        ],
+        'seo.organization.telephone' => '+8801625292000',
+        'seo.organization.email' => 'hello@parent.test',
+        'seo.organization.contact_point' => [
+            'contact_type' => 'customer support',
+            'telephone' => '+8801625292000',
+            'email' => null,
+            'area_served' => 'BD',
+            'available_language' => ['Bengali', 'English'],
+        ],
+    ]);
+
+    expect(app(SiteSchema::class)->organization()->toJsonLd())->toBe([
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'Parent Co',
+        'url' => 'https://parent.test',
+        'logo' => 'https://parent.test/logo.png',
+        'sameAs' => ['https://social.test/parent'],
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'Uposhohor R/A',
+            'addressLocality' => 'Bogura',
+            'postalCode' => '5800',
+            'addressCountry' => 'BD',
+        ],
+        'telephone' => '+8801625292000',
+        'email' => 'hello@parent.test',
+        'contactPoint' => [
+            '@type' => 'ContactPoint',
+            'telephone' => '+8801625292000',
+            'contactType' => 'customer support',
+            'areaServed' => 'BD',
+            'availableLanguage' => ['Bengali', 'English'],
+        ],
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => 'Acme',
+            'url' => 'https://acme.test',
+            'logo' => 'https://acme.test/logo.png',
+            'sameAs' => ['https://social.test/acme'],
+        ],
+    ]);
+});
+
+test('the organization omits address and contact details when they are null', function () {
+    config([
+        'seo.organization.address' => ['street' => null, 'locality' => null, 'region' => null, 'postal_code' => null, 'country' => null],
+        'seo.organization.telephone' => null,
+        'seo.organization.email' => null,
+        'seo.organization.contact_point' => ['contact_type' => 'customer support', 'telephone' => null, 'email' => null],
+    ]);
+
+    expect(app(SiteSchema::class)->organization()->toJsonLd())
+        ->not->toHaveKeys(['address', 'telephone', 'email', 'contactPoint']);
+});
+
+test('the publisher reference stays minimal when the organization has contact details', function () {
+    config([
+        'seo.organization.address' => ['locality' => 'Bogura', 'country' => 'BD'],
+        'seo.organization.telephone' => '+8801625292000',
+    ]);
+
+    expect(app(SiteSchema::class)->publisher()->toArray())
+        ->not->toHaveKeys(['address', 'telephone', 'contactPoint']);
+});
+
+test('the default config gives the organization its Bogura address and phone', function () {
+    $defaults = require __DIR__.'/../../config/seo.php';
+
+    config(['seo.organization' => $defaults['organization']]);
+
+    $organization = app(SiteSchema::class)->organization()->toJsonLd();
+
+    expect($organization['address'])->toBe([
+        '@type' => 'PostalAddress',
+        'streetAddress' => 'Uposhohor R/A',
+        'addressLocality' => 'Bogura',
+        'postalCode' => '5800',
+        'addressCountry' => 'BD',
+    ])
+        ->and($organization['telephone'])->toBe('+8801625292000')
+        ->and($organization)->not->toHaveKeys(['email', 'openingHoursSpecification'])
+        ->and($organization['contactPoint']['telephone'])->toBe('+8801625292000');
+});
+
 test('the website carries a search action on the site url and names its publisher', function () {
     expect(app(SiteSchema::class)->webSite()->toJsonLd())->toBe([
         '@context' => 'https://schema.org',

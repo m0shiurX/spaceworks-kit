@@ -15,6 +15,8 @@ use Laravel\Head\Schema\Product;
 use Laravel\Head\Schema\SchemaObject;
 use Laravel\Head\Schema\WebSite;
 use Spaceworks\Kit\Seo\Schema\AggregateRating;
+use Spaceworks\Kit\Seo\Schema\ContactPoint;
+use Spaceworks\Kit\Seo\Schema\PostalAddress;
 use Spaceworks\Kit\Seo\Schema\SearchAction;
 use Spaceworks\Kit\Seo\Schema\SoftwareApplication;
 
@@ -29,7 +31,8 @@ class SiteSchema
     public function __construct(protected Repository $config, protected EntityGraph $graph) {}
 
     /**
-     * The organization with its profiles and the site's brand.
+     * The organization with its profiles, address and contact details (each
+     * only when configured) and the site's brand.
      */
     public function organization(): Organization
     {
@@ -39,7 +42,89 @@ class SiteSchema
             $organization->set('sameAs', $sameAs);
         }
 
+        if ($address = $this->organizationAddress()) {
+            $organization->set('address', $address);
+        }
+
+        if ($telephone = $this->string('seo.organization.telephone')) {
+            $organization->set('telephone', $telephone);
+        }
+
+        if ($email = $this->string('seo.organization.email')) {
+            $organization->set('email', $email);
+        }
+
+        if ($contactPoint = $this->organizationContactPoint()) {
+            $organization->set('contactPoint', $contactPoint);
+        }
+
         return $organization->set('brand', $this->brand());
+    }
+
+    /**
+     * The organization's postal address, or null when no part is configured.
+     */
+    public function organizationAddress(): ?PostalAddress
+    {
+        $parts = [
+            'streetAddress' => $this->string('seo.organization.address.street'),
+            'addressLocality' => $this->string('seo.organization.address.locality'),
+            'addressRegion' => $this->string('seo.organization.address.region'),
+            'postalCode' => $this->string('seo.organization.address.postal_code'),
+            'addressCountry' => $this->string('seo.organization.address.country'),
+        ];
+
+        $parts = array_filter($parts, fn (string $part): bool => $part !== '');
+
+        if ($parts === []) {
+            return null;
+        }
+
+        $address = new PostalAddress;
+
+        foreach ($parts as $property => $value) {
+            $address->set($property, $value);
+        }
+
+        return $address;
+    }
+
+    /**
+     * The organization's contact point, or null when it has no telephone or
+     * email.
+     */
+    public function organizationContactPoint(): ?ContactPoint
+    {
+        $telephone = $this->string('seo.organization.contact_point.telephone');
+        $email = $this->string('seo.organization.contact_point.email');
+
+        if ($telephone === '' && $email === '') {
+            return null;
+        }
+
+        $contactPoint = new ContactPoint;
+
+        if ($telephone !== '') {
+            $contactPoint->telephone($telephone);
+        }
+
+        if ($type = $this->string('seo.organization.contact_point.contact_type')) {
+            $contactPoint->contactType($type);
+        }
+
+        if ($email !== '') {
+            $contactPoint->email($email);
+        }
+
+        if ($areaServed = $this->string('seo.organization.contact_point.area_served')) {
+            $contactPoint->areaServed($areaServed);
+        }
+
+        if ($languages = array_values(array_filter((array) $this->config->get('seo.organization.contact_point.available_language')))) {
+            $contactPoint->availableLanguage($languages);
+        }
+
+        return $contactPoint;
     }
 
     /**
