@@ -1,0 +1,46 @@
+{
+    "name": "spaceworks/kit",
+    "description": "Shared SEO (Laravel Head entity graph + schema) and lead attribution for the Spaceworks sites.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^13.17",
+        "inertiajs/inertia-laravel": "^3.0",
+        "laravel/head": "^0.2.2"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.6",
+        "pestphp/pest-plugin-laravel": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spaceworks\\Kit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spaceworks\\Kit\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Spaceworks\\Kit\\KitServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "pest"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
