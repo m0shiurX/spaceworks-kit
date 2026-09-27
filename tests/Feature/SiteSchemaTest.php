@@ -192,20 +192,13 @@ test('the website has no search action without a search path', function () {
     expect(app(SiteSchema::class)->webSite()->toJsonLd())->not->toHaveKey('potentialAction');
 });
 
-test('the software application is priced at its first plan, with its brand and publisher', function () {
+test('the software application is priced at its first plan, with its publisher and no brand', function () {
     expect(app(SiteSchema::class)->softwareApplication()->toJsonLd())->toBe([
         '@context' => 'https://schema.org',
         '@type' => 'SoftwareApplication',
         'name' => 'Acme App',
         'operatingSystem' => 'Web',
         'applicationCategory' => 'BusinessApplication',
-        'brand' => [
-            '@type' => 'Brand',
-            'name' => 'Acme',
-            'url' => 'https://acme.test',
-            'logo' => 'https://acme.test/logo.png',
-            'sameAs' => ['https://social.test/acme'],
-        ],
         'offers' => ['@type' => 'Offer', 'price' => '10', 'priceCurrency' => 'USD'],
         'aggregateRating' => ['@type' => 'AggregateRating', 'ratingValue' => '4.5', 'ratingCount' => '20'],
         'publisher' => [

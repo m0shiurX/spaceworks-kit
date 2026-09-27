@@ -190,8 +190,7 @@ class SiteSchema
         $software = $this->identify(new SoftwareApplication, $this->graph->softwareApplicationId())
             ->name($this->string('seo.software.name'))
             ->operatingSystem($this->string('seo.software.operating_system'))
-            ->applicationCategory($this->string('seo.software.application_category'))
-            ->brand($this->brand());
+            ->applicationCategory($this->string('seo.software.application_category'));
 
         if ($plan = $this->plans()[0] ?? null) {
             $software->offers((new Offer)
