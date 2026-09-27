@@ -101,6 +101,7 @@ return [
         'name' => 'Spaceworks',
         'url' => env('SEO_ORGANIZATION_URL', 'https://spaceworks.dev'),
         'logo' => env('SEO_ORGANIZATION_LOGO', 'https://spaceworks.dev/logo.png'),
+        'image' => env('SEO_ORGANIZATION_IMAGE', 'https://spaceworks.dev/brand/social/og-image.png'),
         'same_as' => [],
         'address' => [
             'street' => 'Uposhohor R/A',

@@ -319,3 +319,12 @@ test('the article omits empty optional values', function () {
         ->toHaveKeys(['@context', '@type', 'headline', 'publisher'])
         ->not->toHaveKeys(['description', 'image', 'datePublished', 'author', 'articleSection']);
 });
+
+test('the organization carries its image when configured, but publisher references do not', function () {
+    config(['seo.organization.image' => 'https://parent.test/cover.png']);
+
+    $schema = app(SiteSchema::class);
+
+    expect($schema->organization()->toJsonLd()['image'])->toBe('https://parent.test/cover.png')
+        ->and($schema->publisher()->toJsonLd())->not->toHaveKey('image');
+});

@@ -31,12 +31,16 @@ class SiteSchema
     public function __construct(protected Repository $config, protected EntityGraph $graph) {}
 
     /**
-     * The organization with its profiles, address and contact details (each
-     * only when configured) and the site's brand.
+     * The organization with its image, profiles, address and contact details
+     * (each only when configured) and the site's brand.
      */
     public function organization(): Organization
     {
         $organization = $this->publisher();
+
+        if ($image = $this->string('seo.organization.image')) {
+            $organization->set('image', $image);
+        }
 
         if ($sameAs = $this->sameAs('seo.organization.same_as')) {
             $organization->set('sameAs', $sameAs);
